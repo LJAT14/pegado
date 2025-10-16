@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-ao">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A Duquesa dos Bolos PPP - Bolos e Doces Artesanais em Luanda, Angola">
+    <title>A Duquesa dos Bolos PPP - Bolos e Doces Artesanais</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E👑%3C/text%3E%3C/svg%3E" type="image/svg+xml">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo-svg">
+                <i class="fas fa-crown"></i>
+            </div>
+            <span class="logo-text">A Duquesa dos Bolos PPP</span>
+        </div>
+        
+        <nav class="navbar" id="navbar">
+            <a href="#home">Início</a>
+            <a href="#products">Produtos</a>
+            <a href="#about">Sobre</a>
+            <a href="#contact">Contacto</a>
+        </nav>
+        
+        <div class="icons">
+            <i class="fas fa-user" id="user-icon"></i>
+            <i class="fas fa-shopping-cart" id="cart-icon"></i>
+            <i class="fas fa-bars" id="menu-btn"></i>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <h1>A Duquesa dos Bolos PPP</h1>
+        <p>Bolos artesanais que adoçam seus momentos especiais</p>
+        <a href="#products" class="btn btn-primary">
+            <i class="fas fa-utensils"></i> Ver Produtos
+        </a>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products section" id="products">
+        <div class="container">
+            <h2 class="section-title">Nossos <span>Produtos</span></h2>
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about section" id="about">
+        <div class="container">
+            <h2 class="section-title">Sobre <span>Nós</span></h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>A Duquesa dos Bolos PPP é especializada em criar bolos e doces artesanais que transformam seus momentos especiais em memórias inesquecíveis.</p>
+                    <p>Com ingredientes selecionados e muito amor em cada receita, oferecemos produtos únicos e personalizados para todas as ocasiões.</p>
+                    <p>Desde 2020 adoçando a vida dos luandenses com nossos sabores exclusivos e elegância real.</p>
+                </div>
+                <div class="about-image">
+                    <img src="images/Sobre.jpg" alt="Equipe A Duquesa dos Bolos PPP" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact section" id="contact">
+        <div class="container">
+            <h2 class="section-title">Entre em <span>Contacto</span></h2>
+            <div class="contact-container">
+                <div class="contact-info">
+                    <div class="contact-card">
+                        <i class="fab fa-whatsapp"></i>
+                        <h3>WhatsApp</h3>
+                        <p>+244 943 268 336</p>
+                        <a href="https://wa.me/244943268336" class="btn btn-outline">
+                            <i class="fab fa-whatsapp"></i> Enviar Mensagem
+                        </a>
+                    </div>
+                    <div class="contact-card">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h3>Localização</h3>
+                        <p>Luanda, Angola</p>
+                        <a href="https://maps.google.com/?q=Luanda,Angola" class="btn btn-outline">
+                            <i class="fas fa-directions"></i> Ver no Mapa
+                        </a>
+                    </div>
+                    <div class="contact-card">
+                        <i class="fas fa-clock"></i>
+                        <h3>Horário</h3>
+                        <p>Seg-Sáb: 8h-18h</p>
+                        <p>Domingo: Encomendas apenas</p>
+                    </div>
+                </div>
+                
+                <form class="contact-form" id="contactForm">
+                    <h3>Envie-nos uma mensagem</h3>
+                    <div class="form-group">
+                        <label for="name">Nome</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Mensagem</label>
+                        <textarea id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Enviar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>A Duquesa dos Bolos PPP</h3>
+                    <p>Criando doces momentos desde 2020</p>
+                    <div class="payment-methods">
+                        <i class="fab fa-cc-visa"></i>
+                        <i class="fab fa-cc-mastercard"></i>
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Links Rápidos</h3>
+                    <a href="#home">Início</a>
+                    <a href="#products">Produtos</a>
+                    <a href="#about">Sobre</a>
+                    <a href="#contact">Contacto</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Redes Sociais</h3>
+                    <div class="social-links">
+                        <a href="https://facebook.com/aduquesadosbolosppp" aria-label="Facebook">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="https://instagram.com/aduquesadosbolosppp" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://wa.me/244943268336" aria-label="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; <span id="current-year"></span> A Duquesa dos Bolos PPP. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Seu Carrinho</h3>
+            <button class="close-cart" id="closeCart">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items loaded here -->
+        </div>
+        <div class="cart-total">
+            <p>Total: <span id="cartTotal">0</span> Kz</p>
+            <button class="btn btn-primary" id="checkoutBtn">
+                Finalizar Compra <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+    <div class="cart-overlay" id="cartOverlay"></div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
