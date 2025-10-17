@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-ao">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Doceria Pegado</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../admin.css">
+    <style>
+        :root {
+            --primary: #722f37;
+            --primary-light: #8b4049;
+            --accent: #f5f0e8;
+            --dark: #2c2c2c;
+            --mid-gray: #6b6b6b;
+            --bg-light: #faf8f5;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-light);
+            margin: 0;
+            padding: 0;
+        }
+
+        .admin-header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .admin-user {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            color: var(--mid-gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .stat-card .subtext {
+            font-size: 0.85rem;
+            color: var(--mid-gray);
+            margin-top: 0.5rem;
+        }
+
+        .stat-card.profit {
+            border-left: 4px solid var(--success);
+        }
+
+        .stat-card.revenue {
+            border-left: 4px solid var(--primary);
+        }
+
+        .stat-card.pending {
+            border-left: 4px solid var(--warning);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--mid-gray);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .orders-table, .products-table {
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--accent);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-confirmed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-export {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .profit-positive {
+            color: var(--success);
+        }
+
+        .profit-negative {
+            color: var(--danger);
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <div class="admin-logo">
+            <i class="fas fa-birthday-cake"></i> Admin - Doceria Pegado
+        </div>
+        <div class="admin-user">
+            <button class="btn btn-export" onclick="showExportModal()">
+                <i class="fas fa-download"></i> Exportar CSV
+            </button>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Sair
+            </button>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Statistics Cards -->
+        <div class="stats-grid" id="stats-grid">
+            <div class="stat-card revenue">
+                <h3>Receita Total</h3>
+                <div class="value" id="total-revenue">0 Kz</div>
+                <div class="subtext">De todos os pedidos</div>
+            </div>
+            <div class="stat-card profit">
+                <h3>Lucro Total</h3>
+                <div class="value profit-positive" id="total-profit">0 Kz</div>
+                <div class="subtext">Margem: <span id="profit-margin">0%</span></div>
+            </div>
+            <div class="stat-card pending">
+                <h3>Pedidos Pendentes</h3>
+                <div class="value" id="pending-orders">0</div>
+                <div class="subtext">Aguardando confirmação</div>
+            </div>
+            <div class="stat-card">
+                <h3>Pedidos Hoje</h3>
+                <div class="value" id="today-orders">0</div>
+                <div class="subtext">Lucro: <span id="today-profit">0 Kz</span></div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('orders')">
+                <i class="fas fa-shopping-bag"></i> Pedidos
+            </button>
+            <button class="tab" onclick="switchTab('products')">
+                <i class="fas fa-birthday-cake"></i> Produtos
+            </button>
+        </div>
+
+        <!-- Orders Tab -->
+        <div class="tab-content active" id="orders-tab">
+            <div class="orders-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Cliente</th>
+                            <th>Itens</th>
+                            <th>Total</th>
+                            <th>Custo</th>
+                            <th>Lucro</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Products Tab -->
+        <div class="tab-content" id="products-tab">
+            <button class="btn btn-primary" onclick="showProductModal()">
+                <i class="fas fa-plus"></i> Adicionar Produto
+            </button>
+            <div class="products-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Preço</th>
+                            <th>Custo</th>
+                            <th>Lucro/Unidade</th>
+                            <th>Margem</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div class="modal" id="order-modal">
+        <div class="modal-content">
+            <h2>Detalhes do Pedido #<span id="modal-order-number"></span></h2>
+            <div id="order-details"></div>
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button class="btn btn-success" onclick="updateOrderStatus('confirmed')">Confirmar</button>
+                <button class="btn btn-primary" onclick="updateOrderStatus('completed')">Completar</button>
+                <button class="btn" onclick="closeModal('order-modal')">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal" id="product-modal">
+        <div class="modal-content">
+            <h2 id="product-modal-title">Adicionar Produto</h2>
+            <form id="product-form">
+                <div class="form-group">
+                    <label>Nome</label>
+                    <input type="text" id="product-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Preço (Kz)</label>
+                    <input type="number" id="product-price" required>
+                </div>
+                <div class="form-group">
+                    <label>Custo (Kz)</label>
+                    <input type="number" id="product-cost" required>
+                </div>
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <input type="text" id="product-description">
+                </div>
+                <div class="form-group">
+                    <label>Imagem URL</label>
+                    <input type="text" id="product-image">
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <button type="button" class="btn" onclick="closeModal('product-modal')">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal" id="export-modal">
+        <div class="modal-content">
+            <h2>Exportar para CSV</h2>
+            <div class="form-group">
+                <label>Tipo de Exportação</label>
+                <select id="export-type">
+                    <option value="orders">Pedidos</option>
+                    <option value="products">Produtos</option>
+                </select>
+            </div>
+            <div id="date-filters">
+                <div class="form-group">
+                    <label>Data Inicial</label>
+                    <input type="date" id="start-date">
+                </div>
+                <div class="form-group">
+                    <label>Data Final</label>
+                    <input type="date" id="end-date">
+                </div>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <button class="btn btn-success" onclick="exportCSV()">
+                    <i class="fas fa-download"></i> Exportar
+                </button>
+                <button class="btn" onclick="closeModal('export-modal')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../admin-dashboard.js"></script>
+</body>
+</html>

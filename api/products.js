@@ -1,6 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
+ import { createClient } from '@supabase/supabase-js';
 import formidable from 'formidable';
 import fs from 'fs';
+import { verifyToken } from '../lib/auth-middleware';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -13,13 +14,23 @@ export const config = {
   },
 };
 
+// Check if user is authenticated (for protected routes)
+function isAuthenticated(req) {
+  const token = req.cookies?.auth_token || 
+                req.headers.authorization?.replace('Bearer ', '');
+  
+  if (!token) return false;
+  
+  const decoded = verifyToken(token);
+  return decoded !== null;
+}
+
 // Parse form data with file uploads
 const parseForm = (req) => {
   return new Promise((resolve, reject) => {
     const form = formidable();
     form.parse(req, (err, fields, files) => {
       if (err) reject(err);
-      // Formidable v3 returns arrays, so we need to handle that
       const cleanFields = {};
       for (const key in fields) {
         cleanFields[key] = Array.isArray(fields[key]) ? fields[key][0] : fields[key];
@@ -34,22 +45,21 @@ const parseForm = (req) => {
 };
 
 export default async function handler(req, res) {
-  // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
   try {
-    // GET all products or single product
+    // GET - Public access (anyone can view products)
     if (req.method === 'GET') {
       const { id } = req.query;
       
       if (id) {
-        // Get single product
         const { data, error } = await supabase
           .from('products')
           .select('*')
@@ -57,20 +67,43 @@ export default async function handler(req, res) {
           .single();
         
         if (error) throw error;
+        
+        // Hide cost from public if not admin
+        if (!isAuthenticated(req) && data) {
+          delete data.cost;
+        }
+        
         return res.status(200).json(data);
       } else {
-        // Get all products
         const { data, error } = await supabase
           .from('products')
           .select('*')
           .order('id', { ascending: true });
         
         if (error) throw error;
+        
+        // Hide cost from public if not admin
+        if (!isAuthenticated(req)) {
+          const publicData = (data || []).map(product => {
+            const { cost, ...publicProduct } = product;
+            return publicProduct;
+          });
+          return res.status(200).json(publicData);
+        }
+        
         return res.status(200).json(data || []);
       }
     }
 
-    // POST - Add new product
+    // POST, PUT, DELETE - Admin only
+    if (!isAuthenticated(req)) {
+      return res.status(401).json({ 
+        error: 'Authentication required',
+        code: 'AUTH_REQUIRED'
+      });
+    }
+
+    // POST - Add new product (Admin only)
     if (req.method === 'POST') {
       const { fields, files } = await parseForm(req);
       let imageUrl = '/images/default-cake.jpg';
@@ -91,7 +124,6 @@ export default async function handler(req, res) {
         if (uploadError) {
           console.error('Upload error:', uploadError);
         } else {
-          // Get public URL
           const { data: { publicUrl } } = supabase.storage
             .from('products')
             .getPublicUrl(fileName);
@@ -101,13 +133,15 @@ export default async function handler(req, res) {
         imageUrl = fields.imagePath;
       }
 
-      // Insert product into database
+      // Insert product with cost
       const { data, error } = await supabase
         .from('products')
         .insert([
           {
             name: fields.name,
             price: parseInt(fields.price),
+            cost: fields.cost ? parseInt(fields.cost) : 0, // New cost field
+            description: fields.description || '',
             image: imageUrl
           }
         ])
@@ -118,7 +152,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, product: data });
     }
 
-    // PUT - Update product
+    // PUT - Update product (Admin only)
     if (req.method === 'PUT') {
       const { id } = req.query;
       
@@ -130,10 +164,16 @@ export default async function handler(req, res) {
       
       let updateData = {
         name: fields.name,
-        price: parseInt(fields.price)
+        price: parseInt(fields.price),
+        description: fields.description || ''
       };
 
-      // Handle image update if new image uploaded
+      // Add cost if provided
+      if (fields.cost) {
+        updateData.cost = parseInt(fields.cost);
+      }
+
+      // Handle image update
       if (files.image) {
         const file = files.image;
         const fileBuffer = fs.readFileSync(file.filepath);
@@ -167,7 +207,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, product: data });
     }
 
-    // DELETE - Delete product
+    // DELETE - Delete product (Admin only)
     if (req.method === 'DELETE') {
       const { id } = req.query;
       

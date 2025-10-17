@@ -1,1 +1,15 @@
-.vercel
+# Environment Variables
+.env.local
+.env*.local
+.env
+
+# Dependencies
+node_modules/
+
+# Build
+.next/
+dist/
+
+# Misc
+.DS_Store
+*.log
