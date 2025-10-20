@@ -1,15 +1,6 @@
-# Environment Variables
-.env.local
-.env*.local
-.env
-
-# Dependencies
-node_modules/
-
-# Build
-.next/
-dist/
-
-# Misc
-.DS_Store
-*.log
+node_modules/ 
+.env 
+.env.local 
+js/supabase-config.js 
+.DS_Store 
+Thumbs.db 
