@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-ao">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Doceria Pegado</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Admin CSS -->
+    <link rel="stylesheet" href="css/admin.css">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Login Modal (shows first) -->
+    <div class="modal active" id="login-modal">
+        <div class="modal-content">
+            <div class="login-header">
+                <i class="fas fa-user-shield admin-icon"></i>
+                <h2>Painel Administrativo</h2>
+                <p>Doceria Pegado</p>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="admin-email">
+                        <i class="fas fa-envelope"></i> Email
+                    </label>
+                    <input 
+                        type="email" 
+                        id="admin-email" 
+                        placeholder="Digite seu email" 
+                        required 
+                        autocomplete="email"
+                    >
+                </div>
+                <div class="form-group">
+                    <label for="admin-password">
+                        <i class="fas fa-lock"></i> Senha
+                    </label>
+                    <input 
+                        type="password" 
+                        id="admin-password" 
+                        placeholder="Digite sua senha" 
+                        required 
+                        autocomplete="current-password"
+                    >
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">
+                    <i class="fas fa-sign-in-alt"></i> Entrar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Panel (hidden until login) -->
+    <div id="admin-panel" style="display: none;">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="admin-header-content">
+                <div>
+                    <h1>
+                        <i class="fas fa-birthday-cake"></i> 
+                        Doceria Pegado
+                        <span class="admin-badge">ADMIN</span>
+                    </h1>
+                </div>
+                <div class="admin-nav">
+                    <a href="index.html" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-home"></i> Ver Site
+                    </a>
+                    <button id="logout-btn" class="btn btn-danger btn-sm">
+                        <i class="fas fa-sign-out-alt"></i> Sair
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Container -->
+        <div class="admin-container">
+            <!-- Tabs -->
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="admin-tab" data-tab="products">
+                    <i class="fas fa-cake-candles"></i>
+                    <span>Produtos</span>
+                </button>
+                <button class="admin-tab" data-tab="orders">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Pedidos</span>
+                </button>
+                <button class="admin-tab" data-tab="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Configurações</span>
+                </button>
+            </div>
+
+            <!-- Tab Contents -->
+            <div class="admin-tab-content">
+                <!-- Dashboard -->
+                <div class="tab-pane active" id="dashboard-pane">
+                    <div class="tab-header">
+                        <h2>Dashboard</h2>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <i class="fas fa-cake-candles"></i>
+                            <div class="stat-info">
+                                <h3 id="total-products">0</h3>
+                                <p>Produtos Ativos</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-shopping-cart"></i>
+                            <div class="stat-info">
+                                <h3 id="total-orders">0</h3>
+                                <p>Total de Pedidos</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <div class="stat-info">
+                                <h3 id="total-revenue">0 AOA</h3>
+                                <p>Receita Total</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-clock"></i>
+                            <div class="stat-info">
+                                <h3 id="pending-orders">0</h3>
+                                <p>Pedidos Pendentes</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products -->
+                <div class="tab-pane" id="products-pane">
+                    <div class="tab-header">
+                        <h2>Gerenciar Produtos</h2>
+                        <button class="btn btn-primary" id="add-product-btn">
+                            <i class="fas fa-plus"></i> Adicionar Produto
+                        </button>
+                    </div>
+                    <div class="admin-products-list" id="products-list">
+                        <!-- Products will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Orders -->
+                <div class="tab-pane" id="orders-pane">
+                    <div class="tab-header">
+                        <h2>Pedidos</h2>
+                        <button class="btn btn-danger btn-sm" id="clear-orders-btn">
+                            <i class="fas fa-trash"></i> Limpar Histórico
+                        </button>
+                    </div>
+                    <div class="admin-orders-list" id="orders-list">
+                        <!-- Orders will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Settings -->
+                <div class="tab-pane" id="settings-pane">
+                    <div class="tab-header">
+                        <h2>Configurações</h2>
+                    </div>
+                    <form id="settings-form">
+                        <div class="form-group">
+                            <label for="whatsapp-number">
+                                <i class="fab fa-whatsapp"></i> Número WhatsApp
+                            </label>
+                            <input 
+                                type="text" 
+                                id="whatsapp-number" 
+                                placeholder="+244 943 268 336"
+                                value="244943268336"
+                            >
+                            <small>Número para receber pedidos (sem espaços ou símbolos)</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="store-name">
+                                <i class="fas fa-store"></i> Nome da Loja
+                            </label>
+                            <input 
+                                type="text" 
+                                id="store-name" 
+                                placeholder="Doceria Pegado"
+                                value="Doceria Pegado"
+                            >
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Salvar Configurações
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div class="modal" id="product-modal">
+        <div class="modal-content modal-large">
+            <button class="close-modal" id="close-product-modal">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <h2 id="product-modal-title">Adicionar Produto</h2>
+            </div>
+            <form id="product-form">
+                <input type="hidden" id="product-id">
+                
+                <div class="form-group">
+                    <label for="product-name">
+                        <i class="fas fa-cake-candles"></i> Nome do Produto
+                    </label>
+                    <input 
+                        type="text" 
+                        id="product-name" 
+                        placeholder="Ex: Bolo de Chocolate Premium"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="product-image">
+                        <i class="fas fa-image"></i> Caminho da Imagem
+                    </label>
+                    <input 
+                        type="text" 
+                        id="product-image" 
+                        placeholder="images/bolo-chocolate.jpg"
+                        required
+                    >
+                    <small>Caminho da imagem na pasta images/</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="product-price">
+                        <i class="fas fa-money-bill"></i> Preço (AOA)
+                    </label>
+                    <input 
+                        type="number" 
+                        id="product-price" 
+                        placeholder="15000"
+                        min="0"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="product-description">
+                        <i class="fas fa-align-left"></i> Descrição
+                    </label>
+                    <textarea 
+                        id="product-description" 
+                        placeholder="Descreva o produto..."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-product-btn">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Salvar Produto
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/supabase-config.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
